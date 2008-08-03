@@ -1,0 +1,18 @@
+#summary One-sentence summary of this page.
+
+= Usage =
+
+This program is really very simple. The syntax is:
+ amberenergy.x prmtop mdcrd[.gz]
+
+The program will then read the useful information from the prmtop file (atom charges, LJ coefficients) and read the trajectories, one step at time, into memory and process them.
+
+The energy computation is also very simple:
+
+For electrostatics:
+
+ * Elec = (qi.qj) / (D.r) , remember that in amber charge format the charges are already multiplied by 18.33, so that the above equation directly gives the electrostatics energy.
+
+ * VDW = Lennard Jones potential is applied according to the rules defined in Amber.
+
+ * Nonbonded energy = Ele+VDW
