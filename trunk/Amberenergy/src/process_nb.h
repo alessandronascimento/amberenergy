@@ -60,6 +60,6 @@ double compute_nb2 (vector<vector<double> > current, int astart, int aend, vecto
 				vdw = vdw + (((LJA[ic-1])/(r2*r2*r2*r2*r2*r2))-((LJB[ic-1])/(r2*r2*r2))); }
 
 			else {			// Use 10 - 12 LJ Potencial
-				vdw = vdw + (((LJA[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((LJB[-(ic-1)])/(r2*r2*r2*r2*r2)));} } }
+				vdw = vdw + (((ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));} } }
 	printf("%12.4f %12.4f %12.4f\n", elec, vdw, (elec+vdw));
 	return (elec+vdw);}
