@@ -104,7 +104,7 @@ int main (int argc, char* argv[]) {
 		sel_start = res_pointer[sel_res-1];
 		sel_end = res_pointer[sel_res]-1;
 		for(int i=0; i<resnames.size(); i++) {
-			if (resnames[i] != "WAT" and resnames[i] != "Na+" and resnames[i] != "Cl-" and resnames[i] != "Mn2") {
+			if (resnames[i] != "WAT" and resnames[i] != "Na+" and resnames[i] != "Cl-" and resnames[i] != "Mn2" and resnames[i] != "Ca2") {
 				protein_last_residue++; } }
 		cout << "# Protein last residue number: " << protein_last_residue << endl;
 		sel2_start = sel_end+1;
