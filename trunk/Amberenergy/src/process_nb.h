@@ -49,17 +49,22 @@ double compute_nb (vector<vector<double> > current, int astart, int aend, vector
 double compute_nb2 (vector<vector<double> > current, int astart, int aend, vector<int> iac, vector<int> ico, int bstart, int bend) {
 	elec=0.00;
 	vdw=0.00;
-	for (int i= astart; i<= aend; i++) {
+	for (int i=astart; i<=aend; i++) {
 		for (int j=bstart; j<=bend; j++) {
 			r = compute_r(current[i], current[j]);
 			r2 = r*r;
-			elec = elec+((charges[i]*charges[j])/(r*diel));
+			elec += ((charges[i]*charges[j])/(r*diel));
 			iaci = Natomtypes*(iac[i]-1);
 			ic = 	ico[(iaci+iac[j])-1];
 			if (ic > 0) { 		// Use 12 - 6 LJ Potencial
-				vdw = vdw + (((LJA[ic-1])/(r2*r2*r2*r2*r2*r2))-((LJB[ic-1])/(r2*r2*r2))); }
+				vdw += (((LJA[ic-1])/(r2*r2*r2*r2*r2*r2))-((LJB[ic-1])/(r2*r2*r2))); }
 
 			else {			// Use 10 - 12 LJ Potencial
-				vdw = vdw + (((ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));} } }
+				vdw += (((ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));
+//				printf("10-12 potential for atom pair %d-%d\n", i, j);
+			}
+		}
+	}
 	printf("%12.4f %12.4f %12.4f\n", elec, vdw, (elec+vdw));
-	return (elec+vdw);}
+	return (elec+vdw);
+}
