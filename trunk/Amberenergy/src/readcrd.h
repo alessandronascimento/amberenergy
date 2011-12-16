@@ -161,6 +161,7 @@ void read_crd_box2(int sel_start, int sel_end, int sel2_start, int sel2_end, cha
 void read_gzcrd_box2(int sel_start, int sel_end, int sel2_start, int sel2_end, char* argv[]) {
 
 	igzstream mdcrd(argv[2]);
+	float temp;
 
 	getline (mdcrd, line);
 	cout << "# " << line << endl;
@@ -179,8 +180,13 @@ void read_gzcrd_box2(int sel_start, int sel_end, int sel2_start, int sel2_end, c
 			xyz.clear();
 		}
 
-		for (int k=1; k<=3; k++) {		// BOX INFO
-			mdcrd >> pos ;
+		if (ifbox > 0){
+//			printf ("Box info: ");
+			for (int k=1; k<=3; k++) {		// BOX INFO
+				mdcrd >> temp;
+//				printf("%.4f ", pos);
+			}
+//			printf("\n");
 		}
 
 		step++;

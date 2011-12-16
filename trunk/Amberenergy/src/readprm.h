@@ -13,7 +13,7 @@
 using namespace std;
 
 
-int N, Natomtypes, atomtype, nb_parm_index, Nres, residt, nph;
+int N, Natomtypes, atomtype, nb_parm_index, Nres, residt, nph, ifbox;
 double charge, LJ_a, LJ_b, asol, bsol;
 string line, flag, resn;
 vector<double> charges, LJA, LJB, ASOL, BSOL;
@@ -34,7 +34,22 @@ void read_parm(ifstream &prmtop) {
 		prmtop >> nph; }
 	prmtop >> nph;
 	printf("# N: %d Ntypes: %d Nres: %d NPH: %d\n", N, Natomtypes, Nres, nph);
-	getline(prmtop,line);
+	for (int i=0; i<7; i++){
+		prmtop >> ifbox;
+	}
+	prmtop >> ifbox;
+	switch (ifbox){
+	case 0:
+		printf("# There is no periodic box. IFBOX = %d.\n", ifbox);
+		break;
+	case 1:
+		printf("# There is a cubic periodic box. IFBOX = %d.\n", ifbox);
+		break;
+	case 2:
+		printf("# There is a truncated octaedron periodic box. IFBOX = %d.\n", ifbox);
+		break;
+	}
+//	getline(prmtop,line);
 	getline(prmtop,line);
 	/*
 
