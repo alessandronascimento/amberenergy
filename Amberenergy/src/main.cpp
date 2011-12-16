@@ -126,24 +126,38 @@ int main (int argc, char* argv[]) {
 	case 3:
 		cout << "# Define your ligand residue number: " ;
 		cin >> sel_res;
+
 		sel_start = res_pointer[sel_res-1];
 		sel_end = res_pointer[sel_res]-1;
-		cout << "# You selected atoms " << sel_start << " to " << sel_end << endl;
+
+		printf("# You selected atoms %d to %d.\n", sel_start, sel_end);
+
 		for(int i=0; i<resnames.size(); i++) {
+
 			if (resnames[i] != "WAT" and resnames[i] != "Na+" and resnames[i] !="Cl-") {
-				protein_last_residue++; } }
-		cout << "# Protein last residue number : " << protein_last_residue << endl;
+				protein_last_residue++;
+			}
+		}
+
+		printf("# Protein has %d residues.\n", protein_last_residue);
+
 		sel2_start = res_pointer[protein_last_residue]; 	// first solvent atom
 		sel2_end = N;
-		cout << "# You selected atom " << sel2_start << " to " << sel2_end << endl;
+
+		printf("# You selected atoms %d to %d.\n", sel2_start, sel2_end);
+
 		if (traj_ans == 1) {
-			read_crd2(sel_start, sel_end, sel2_start, sel2_end, argv); }
+			read_crd2(sel_start, sel_end, sel2_start, sel2_end, argv);
+		}
 		else if (traj_ans == 3) {
-			read_crd_box2(sel_start, sel_end, sel2_start, sel2_end, argv); }
+			read_crd_box2(sel_start, sel_end, sel2_start, sel2_end, argv);
+		}
 		else if (traj_ans == 2) {
-			read_gzcrd2(sel_start, sel_end, sel2_start, sel2_end, argv); }
+			read_gzcrd2(sel_start, sel_end, sel2_start, sel2_end, argv);
+		}
 		else if (traj_ans == 4) {
-			read_gzcrd_box2(sel_start, sel_end, sel2_start, sel2_end, argv); }
+			read_gzcrd_box2(sel_start, sel_end, sel2_start, sel2_end, argv);
+		}
 		break;
 
 	case 4:
@@ -209,6 +223,9 @@ int main (int argc, char* argv[]) {
 		cin >> sel_res >> sel2_res ;
 		sel2_start = res_pointer[sel_res-1];
 		sel2_end = res_pointer[sel2_res]-1;
+		if (sel2_end < 0){
+			sel2_end = N;
+		}
 		cout << "# You selected atom " << sel2_start << " to " << sel2_end << endl;
 		if (traj_ans == 1) {
 			read_crd2(sel_start, sel_end, sel2_start, sel2_end, argv); }

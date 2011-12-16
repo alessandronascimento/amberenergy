@@ -159,20 +159,33 @@ void read_crd_box2(int sel_start, int sel_end, int sel2_start, int sel2_end, cha
     double elect = compute_nb2(current_crd, sel_start-1, sel_end-1, atom_types, ico, sel2_start-1, sel2_end-1); } }
 
 void read_gzcrd_box2(int sel_start, int sel_end, int sel2_start, int sel2_end, char* argv[]) {
-  igzstream mdcrd(argv[2]);
-  getline (mdcrd, line);
-  cout << "# " << line << endl;
-  printf("#%12s %12s %12s %12s\n", "Step", "Elec", "VDW", "Total");
-  while (!mdcrd.eof()){
-    current_crd.clear();
-    for (int i=1; i<=N; i++) {
-      xyz.clear();
-      for (int j=1; j<=3; j++) {
-	mdcrd >> pos;
-	xyz.push_back(pos); }
-      current_crd.push_back(xyz); }
-    for (int k=1; k<=3; k++) {		// BOX INFO
-      mdcrd >> pos ; }
-    step++;
-    printf(" %12d ", step);
-    double elect = compute_nb2(current_crd, sel_start-1, sel_end-1, atom_types, ico, sel2_start-1, sel2_end-1); } }
+
+	igzstream mdcrd(argv[2]);
+
+	getline (mdcrd, line);
+	cout << "# " << line << endl;
+
+	printf("#%12s %12s %12s %12s\n", "Step", "Elec", "VDW", "Total");
+
+	while (!mdcrd.eof()){
+
+		current_crd.clear();
+		for (int i=0; i<N; i++) { // all atoms in a frame
+			for (int j=0; j<3; j++) { // x, y and z coordinates
+				mdcrd >> pos;
+				xyz.push_back(pos);
+			}
+			current_crd.push_back(xyz);
+			xyz.clear();
+		}
+
+		for (int k=1; k<=3; k++) {		// BOX INFO
+			mdcrd >> pos ;
+		}
+
+		step++;
+
+		printf(" %12d ", step);
+		double elect = compute_nb2(current_crd, sel_start-1, sel_end-1, atom_types, ico, sel2_start-1, sel2_end-1);
+	}
+}
