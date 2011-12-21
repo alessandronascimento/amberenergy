@@ -45,6 +45,7 @@ double ENERGY::compute_nb2 (PRMTOP* Mol, vector<vector<double> > coords, int ast
 
 			else {			// Use 10 - 12 LJ Potencial
 				vdw += (((Mol->ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((Mol->BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));
+//				vdw += (((Mol->CN1[ic-1])/(r2*r2*r2*r2*r2*r2))-((Mol->CN2[ic-1])/(r2*r2*r2*r2*r2)));
 #ifdef DEBUG
 				printf("ASOL: %10.4f    BSOL: %10.4f\n", Mol->ASOL[-(ic-1)], Mol->CN2[-(ic-1)]);
 #endif
