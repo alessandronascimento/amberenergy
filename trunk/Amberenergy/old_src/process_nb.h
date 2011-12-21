@@ -56,10 +56,14 @@ double compute_nb2 (vector<vector<double> > current, int astart, int aend, vecto
 			elec += ((charges[i]*charges[j])/(r*diel));
 			iaci = Natomtypes*(iac[i]-1);
 			ic = 	ico[(iaci+iac[j])-1];
+
 			if (ic > 0) { 		// Use 12 - 6 LJ Potencial
-				vdw += (((LJA[ic-1])/(r2*r2*r2*r2*r2*r2))-((LJB[ic-1])/(r2*r2*r2))); }
+//				printf("ic = %d para atomos %d e %d. Usando LJ...\n", ic, i, j);
+				vdw += (((LJA[ic-1])/(r2*r2*r2*r2*r2*r2))-((LJB[ic-1])/(r2*r2*r2)));
+			}
 
 			else {			// Use 10 - 12 LJ Potencial
+//				printf("ic = %d para atomos %d e %d. Usando ABSOL...\n", ic, i, j);
 				vdw += (((ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));
 //				printf("10-12 potential for atom pair %d-%d\n", i, j);
 			}
