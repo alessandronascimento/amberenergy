@@ -22,7 +22,7 @@
 #include<string>
 #include<vector>
 #include<stdio.h>
-#include "gzstream.h"
+#include<gzstream.h>
 #include "process_nb.h"
 
 using namespace std;
