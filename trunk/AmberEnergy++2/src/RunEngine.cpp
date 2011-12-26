@@ -27,7 +27,7 @@ int RunEngine::Run(char* argv[]){
 	/*   TRAJECTORY FILE FORMAT    */
 
 	printf("#\n");
-	printf("# Define the format of the trajectory file: ");
+	printf("# Define the format of the trajectory file: \n");
 	printf("#\n");
 	printf("# \t 1) AMBER MDCRD FILE\n");
 	printf("# \t 2) GZIPPED AMBER MDCRD FILE\n");
