@@ -77,8 +77,6 @@ void COORD::read_gzcrd(PRMTOP* Mol, char* filename) {
 	}
 }
 
-
-
 COORD::~COORD() {
 	current_crd.clear();
 	xyz.clear();
