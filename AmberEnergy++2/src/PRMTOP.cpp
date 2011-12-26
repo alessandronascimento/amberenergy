@@ -15,11 +15,13 @@ PRMTOP::PRMTOP(ifstream &prmtop){
 	PRMTOP::get_charges(prmtop, PRMTOP::N);
 	PRMTOP::get_masses(prmtop, PRMTOP::N); // unused
 	PRMTOP::get_atom_type_index(prmtop, PRMTOP::N);
+	PRMTOP::get_number_excluded_atoms(prmtop, PRMTOP::N);
 	PRMTOP::get_nonbond_parm_index(prmtop, PRMTOP::Natomtypes);
 	PRMTOP::get_resnames(prmtop);
 	PRMTOP::get_res_pointers(prmtop);
 	PRMTOP::get_LJA(prmtop, PRMTOP::Natomtypes);
 	PRMTOP::get_LJB(prmtop, PRMTOP::Natomtypes);
+	PRMTOP::get_excluded_atoms_list(prmtop, PRMTOP::nnb);
 	PRMTOP::get_H_ACOEF(prmtop, PRMTOP::nph);
 	PRMTOP::get_H_BCOEF(prmtop, PRMTOP::nph);
 //	PRMTOP::get_amberatoms(prmtop, PRMTOP::N);
@@ -32,6 +34,7 @@ void PRMTOP::get_N(ifstream &prmtop) {
 	if (prmtop.is_open()){
 
 		getline (prmtop, line);
+		printf("#%s\n", line.c_str());
 
 		for (int i=1; i<=5; i++) {
 			getline (prmtop, line);
@@ -39,19 +42,22 @@ void PRMTOP::get_N(ifstream &prmtop) {
 
 		prmtop >> PRMTOP::N >> PRMTOP::Natomtypes;
 
-		for (int i=1; i<=9; i++){
+		for (int i=1; i<=8; i++){
 			prmtop >> line;
 		}
 
+		prmtop >> PRMTOP::nnb;
 		prmtop >> PRMTOP::Nres;
 
 		//
+
 		for (int i=1; i<=7; i++) {
 			prmtop >> PRMTOP::nph;
 		}
 
 		prmtop >> nph;
-		printf("# N: %d Ntypes: %d Nres: %d NPH: %d\n", N, Natomtypes, Nres, nph);
+
+		printf("# N: %d Ntypes: %d Nres: %d NPH: %d NNB:%d\n", N, Natomtypes, Nres, nph, nnb);
 
 		for (int i=0; i<7; i++){
 			prmtop >> this->ifbox;
@@ -82,10 +88,12 @@ void PRMTOP::get_N(ifstream &prmtop) {
 void PRMTOP::get_atomnames(ifstream &prmtop, int N){
 	string name, name2;
 	getline (prmtop, line);
+
 	while (line.size() < 6 or line.substr(6,9) != "ATOM_NAME")  {
 		getline(prmtop, line);
 	}
-	getline(prmtop, line);
+
+	getline(prmtop, line);	// FORMAT
 //	printf("# %s\n", line.c_str());
 	int i=0;
 	while (i<N){
@@ -105,6 +113,7 @@ void PRMTOP::get_atomnames(ifstream &prmtop, int N){
 			i++;
 		}
 	}
+	getline(prmtop, line);
 }
 
 void PRMTOP::get_charges(ifstream &prmtop, int N) {
@@ -136,6 +145,46 @@ void PRMTOP::get_masses(ifstream &prmtop, int N) {
 	}
 	getline (prmtop, line);
 }
+
+void PRMTOP::get_number_excluded_atoms(ifstream &prmtop, int N){
+	getline (prmtop, line);
+	int exc_a;
+	while (line.size() < 6 or line.substr(6,21) != "NUMBER_EXCLUDED_ATOMS")  {
+		getline (prmtop, line);
+	}
+
+	getline (prmtop, line); // FORMAT
+
+
+	for (int i=0; i<N; i++){
+		prmtop >> exc_a;
+		PRMTOP::number_excluded_atoms.push_back(exc_a);
+	}
+
+	getline (prmtop, line);
+
+}
+
+
+void PRMTOP::get_excluded_atoms_list(ifstream &prmtop, int nnb){
+	getline (prmtop, line);
+	int exc_a;
+
+	while (line.size() < 6 or line.substr(6,19) != "EXCLUDED_ATOMS_LIST")  {
+		getline (prmtop, line);
+//		printf("# %s\n", line.c_str());
+	}
+
+	getline (prmtop, line); // FORMAT
+
+	for (int i=0; i< nnb; i++){
+		prmtop >> exc_a;
+		PRMTOP::excluded_atoms_list.push_back(exc_a);
+	}
+
+	getline (prmtop, line);
+}
+
 
 void PRMTOP::get_resnames(ifstream &prmtop){
 	getline (prmtop, line);

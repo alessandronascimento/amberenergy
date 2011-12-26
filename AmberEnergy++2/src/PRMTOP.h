@@ -34,7 +34,9 @@ public:
 	int Nres;
 	//! Number of AMBER atomtypes
 	int Natomtypes;
-	//!
+	//! number of excluded atoms
+	int nnb;
+	//! number of distinct 10-12 hydrogen bond pair types
 	int nph;
 	//!
 	int ifbox;
@@ -54,6 +56,10 @@ public:
 	vector<string> resnames;
 	//!
 	vector<int> atom_types_index;
+	//!
+	vector<int>number_excluded_atoms;
+	//!
+	vector<int> excluded_atoms_list;
 	//!
 	vector<int> ico;
 	//! C++ vector to store the AMBERatoms
@@ -135,6 +141,9 @@ public:
 	void get_H_ACOEF(ifstream &prmtop, int nph);
 
 	void get_H_BCOEF(ifstream &prmtop, int nph);
+
+	void get_number_excluded_atoms(ifstream &prmtop, int N);
+	void get_excluded_atoms_list(ifstream &prmtop, int nnb);
 };
 
 #endif /* PRMTOP_H_ */
