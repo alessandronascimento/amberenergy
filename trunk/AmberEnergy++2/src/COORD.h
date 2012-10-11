@@ -14,10 +14,12 @@
 #include <fstream>
 #include <stdio.h>
 #include <string>
+#include <netcdfcpp.h>
 
 class COORD {
 public:
 	COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, bool gzipped);
+	COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename);
 	int astart, aend, bstart, bend;
 	vector<vector<double> > current_crd;
 	vector<double> xyz;
@@ -28,6 +30,7 @@ public:
 	virtual ~COORD();
 	void read_crd(PRMTOP* Mol, char* filename);
 	void read_gzcrd(PRMTOP* Mol, char* filename);
+	void read_netcdf(PRMTOP* Mol, char* filename);
 };
 
 #endif /* COORD_H_ */
