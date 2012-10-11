@@ -21,6 +21,16 @@ COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, bool g
 	}
 }
 
+COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename) {
+	this->astart = as;
+	this->aend = ae;
+	this->bstart = bs;
+	this->bend = be;
+	Energy = new ENERGY;
+	this->read_netcdf(Mol, filename);
+}
+
+
 void COORD::read_crd(PRMTOP* Mol, char* filename) {
 	step = 0;
 	ifstream mdcrd(filename);
@@ -80,4 +90,29 @@ void COORD::read_gzcrd(PRMTOP* Mol, char* filename) {
 COORD::~COORD() {
 	current_crd.clear();
 	xyz.clear();
+}
+
+void COORD::read_netcdf(PRMTOP* Mol, char* filename){
+	NcFile nc_mdcrd(filename, NcFile::ReadOnly);
+
+	if (!nc_mdcrd.is_valid()){
+		printf("$ Could not open trajectory file %s. Please check.\n", filename);
+	}
+
+	NcDim* FrameDim = nc_mdcrd.get_dim("frame");
+	int size = FrameDim->size();
+	printf("# NETCDF Frame dimension: %d\n", size);
+
+	NcDim* NDim = nc_mdcrd.get_dim("atom");
+	const int Ndim = NDim->size();
+	if (Ndim != Mol->N){
+		printf("# Mismatch among number of atoms in PRMTOP (%d) and NETCDF (%d) files. Please check.\n", Mol->N, Ndim);
+	}
+	else {
+		printf("# NETCDF number of atoms: %d\n", Ndim);
+	}
+
+	NcVar* nc_Coordinates = nc_mdcrd.get_var("coordinates");
+	double xyz;
+	xyz = new double[3][858];
 }

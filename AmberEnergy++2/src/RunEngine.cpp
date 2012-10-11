@@ -8,7 +8,8 @@
 #include "RunEngine.h"
 
 RunEngine::RunEngine() {
-	// TODO Auto-generated constructor stub
+	this->gzipped = false;
+	this->netcdf = false;
 }
 
 RunEngine::~RunEngine() {
@@ -19,10 +20,17 @@ int RunEngine::Run(char* argv[]){
 	printf("# Reading prmtop information...\n");
 
 	ifstream prmtop (argv[1]);
+	if (!prmtop.is_open()){
+		printf("# Prmtop file %s could not be opened. Please check.\n", argv[1]);
+		exit(1);
+	}
+
 	PRMTOP* Mol = new PRMTOP(prmtop);
+	printf("# Prmtop file %s read successfully!\n", argv[1]);
+
 	prmtop.close();
 
-	printf("# Prmtop file %s read successfully!\n", argv[1]);
+
 
 	/*   TRAJECTORY FILE FORMAT    */
 
@@ -36,16 +44,17 @@ int RunEngine::Run(char* argv[]){
 	printf("# Enter your choice number: ");
 	cin >> traj_ans;
 
-	if (traj_ans <1 or traj_ans >= 3){
+	if (traj_ans <1 or traj_ans > 3){
 		printf ("Selection %d invalid. Please try again.\n", traj_ans);
 		exit(1);
 	}
 	if (traj_ans == 2){
 		gzipped=true;
 	}
-	else {
-		gzipped = false;
+	else if (traj_ans == 3){
+		netcdf = true;
 	}
+
 
 
 	/* SELECTIONS */
@@ -94,7 +103,13 @@ int RunEngine::Run(char* argv[]){
 
 			printf("# You selected atom %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
 			printf("# And atom %d (%s) to %d (%s).\n", sel_start, Mol->atomnames[sel_start-1].c_str(), sel_end, Mol->atomnames[sel_end-1].c_str());
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+			if (netcdf){
+				Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+			}
+			else {
+				Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+			}
+
 			break;
 
 
@@ -107,7 +122,13 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = sel_end +1;
 		sel2_end = Mol->N;
 		printf("# And atom %d (%s) to %d (%s).\n", sel_start, Mol->atomnames[sel_start-1].c_str(), sel_end, Mol->atomnames[sel_end-1].c_str());
-		Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		if (netcdf){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		}
+		else {
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		}
+
 		break;
 
 
@@ -132,7 +153,13 @@ int RunEngine::Run(char* argv[]){
 		sel2_end = Mol->N;
 
 		printf("# You selected atoms %d (%s) to %d (%s).\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		if (netcdf){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		}
+		else {
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		}
+
 		break;
 
 	case 4:
@@ -146,7 +173,13 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = Mol->residue_pointer[sel2_res-1];
 		sel2_end = Mol->residue_pointer[sel2_res]-1;
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		if (netcdf){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		}
+		else {
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		}
+
 		break;
 
 	case 5:
@@ -160,8 +193,13 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = Mol->residue_pointer[0];			// first solvent atom
 		sel2_end = Mol->residue_pointer[protein_last_residue];
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
+		if (netcdf){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		}
+		else {
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		}
 
-		Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
 		break;
 
 	case 6:
@@ -181,7 +219,13 @@ int RunEngine::Run(char* argv[]){
 		}
 
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		if (netcdf){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		}
+		else {
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+		}
+
 		break;
 
 	default:

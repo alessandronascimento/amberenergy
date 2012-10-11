@@ -25,6 +25,7 @@ public:
 	int sel2_end;
 	int protein_last_residue;
 	bool gzipped;
+	bool netcdf;
 	int sel2_res;
 	RunEngine();
 	virtual ~RunEngine();
