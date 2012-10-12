@@ -120,19 +120,7 @@ void COORD::read_netcdf(PRMTOP* Mol, char* filename){
 
 	for (int frame=1; frame <= size; frame++){
 		nc_Coordinates->get(&coords[0][0], 1, Ndim, 3);
-// test
-		current_crd.clear();
-		for (int i=0; i< Ndim; i++){
-			for (int j=0; j< 3; j++){
-				xyz.push_back(coords[i][j]);
-			}
-			printf("%d --> %7.3f  %7.3f  %7.3f\n", i, xyz[0], xyz[1], xyz[2]);
-			current_crd.push_back(xyz);
-			xyz.clear();
-		}
 		printf(" %12d ", frame);
-//		Energy->compute_nb2(Mol, coords, this->astart, this->aend, this->bstart, this->bend);
-		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
-		nc_Coordinates->set_cur(frame, 0, 0);
+		Energy->compute_nb2(Mol, coords, this->astart, this->aend, this->bstart, this->bend);
 	}
 }

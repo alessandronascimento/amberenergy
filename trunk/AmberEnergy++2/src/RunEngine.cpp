@@ -39,7 +39,7 @@ int RunEngine::Run(char* argv[]){
 	printf("#\n");
 	printf("# \t 1) AMBER MDCRD FILE\n");
 	printf("# \t 2) GZIPPED AMBER MDCRD FILE\n");
-	printf("# \t 3) NETCDF FORMAT FILE (not implemented yet)\n");
+	printf("# \t 3) NETCDF FORMAT FILE\n");
 	printf("#\n");
 	printf("# Enter your choice number: ");
 	cin >> traj_ans;
