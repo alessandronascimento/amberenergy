@@ -29,7 +29,9 @@ public:
 	virtual ~ENERGY();
 
 	double compute_r(vector<double> i, vector<double> j);
+	double compute_r(double i[], double j[]);
 	double compute_nb2 (PRMTOP* Mol, vector<vector<double> > coords, int astart, int aend, int bstart, int bend);
+	double compute_nb2 (PRMTOP* Mol, double coords[][3], int astart, int aend, int bstart, int bend);
 	void get_excluded_atoms(PRMTOP* Mol, int atom);
 };
 
