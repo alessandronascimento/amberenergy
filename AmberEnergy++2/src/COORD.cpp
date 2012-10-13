@@ -21,13 +21,20 @@ COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, bool g
 	}
 }
 
-COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename) {
+COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, int mode) {
 	this->astart = as;
 	this->aend = ae;
 	this->bstart = bs;
 	this->bend = be;
 	Energy = new ENERGY;
-	this->read_netcdf(Mol, filename);
+	switch (mode){
+	case 3:
+		this->read_netcdf(Mol, filename);
+		break;
+	case 4:
+		this->read_dcd(Mol, filename);
+		break;
+	}
 }
 
 
@@ -122,5 +129,119 @@ void COORD::read_netcdf(PRMTOP* Mol, char* filename){
 		nc_Coordinates->get(&coords[0][0], 1, Ndim, 3);
 		printf(" %12d ", frame);
 		Energy->compute_nb2(Mol, coords, this->astart, this->aend, this->bstart, this->bend);
+	}
+}
+
+void COORD::read_dcd(PRMTOP* Mol, char* filename){
+/*	ifstream dcdfile;
+	dcdfile.open(filename, ios::in | ios::binary);
+	char  readBuffer[2049] = {0};
+	string *buffer;
+
+	if (!dcdfile.is_open()){
+		printf("Could not open file %s. Please check.\n", filename);
+		exit(1);
+	}
+
+	for (int i=0; i<10; i++){
+		dcdfile.read(readBuffer, 2048);
+		printf("%s\n", readBuffer);
+	}
+*/
+	FILE *dcdfile;
+	dcdfile = fopen(filename, "rb");
+//	int N;
+	int hdr;
+	char magic[4];
+	int inctrl[20];
+	int NTITL;
+	int NATREC;
+	int NFREAT;
+	char* title;
+	float *x, *y, *z;
+
+	fread(&hdr, sizeof(int), 1, dcdfile);
+	printf("HDR: %d\n", hdr);
+
+	fread(magic, sizeof(char), 4, dcdfile);
+	printf("magic: %s\n", magic);
+
+	fread(&inctrl, sizeof(int), 20, dcdfile);
+	printf("inctrl: %d\n", inctrl[0]);
+
+	fread(&hdr, sizeof(int), 1, dcdfile);
+	printf("HDR: %d\n", hdr);
+
+	fread(&hdr, sizeof(int), 1, dcdfile);
+	printf("HDR: %d\n", hdr);
+
+	fread(&NTITL, sizeof(int), 1, dcdfile);
+	printf("NTITL: %d\n", NTITL);
+
+	for (int j=0; j < NTITL; j++) {
+		title = (char *) malloc(sizeof(char) * 82);
+		for (int i=0; i<80; i++) {
+			title[i] = fgetc(dcdfile);
+		}
+		title[80] = '\n';
+		title[81] = (char) 0;
+		printf("TITLE: %s\n", title);
+	}
+
+	fread(&hdr, sizeof(int), 1, dcdfile);
+	printf("HDR: %d\n", hdr);
+
+	fread(&hdr, sizeof(int), 1, dcdfile);
+	printf("HDR: %d\n", hdr);
+
+	fread(&NATREC, sizeof(int), 1, dcdfile);
+	printf("NATREC: %d\n", NATREC);
+
+	fread(&hdr, sizeof(int), 1, dcdfile);
+	printf("HDR: %d\n", hdr);
+
+	NFREAT = NATREC-inctrl[8];
+	printf("NFREAT: %d\n", NFREAT);
+
+	printf("What is in box: %d\n", inctrl[10]);
+
+
+
+	x = (float *) malloc(sizeof(float) * NATREC);
+	y = (float *) malloc(sizeof(float) * NATREC);
+	z = (float *) malloc(sizeof(float) * NATREC);
+
+	step = 0;
+
+	while(!feof(dcdfile)){
+		step++;
+		fread(&hdr, sizeof(int), 1, dcdfile);
+//		printf("HDR: %d\n", hdr);
+
+		fread(x, sizeof(float), NATREC, dcdfile);
+		printf("x: %f\n", x[0]);
+
+		fread(&hdr, sizeof(int), 1, dcdfile);
+//		printf("HDR: %d\n", hdr);
+
+		fread(&hdr, sizeof(int), 1, dcdfile);
+//		printf("HDR: %d\n", hdr);
+
+		fread(y, sizeof(float), NATREC, dcdfile);
+		printf("y: %f\n", y[0]);
+
+		fread(&hdr, sizeof(int), 1, dcdfile);
+//		printf("HDR: %d\n", hdr);
+
+		fread(&hdr, sizeof(int), 1, dcdfile);
+//		printf("HDR: %d\n", hdr);
+
+		fread(z, sizeof(float), NATREC, dcdfile);
+		printf("z: %f\n", z[0]);
+
+		printf("step: %d\n", step);
+
+		fread(&hdr, sizeof(int), 1, dcdfile);
+//		printf("HDR: %d\n", hdr);
 	}
 }
