@@ -9,7 +9,7 @@
 
 RunEngine::RunEngine() {
 	this->gzipped = false;
-	this->netcdf = false;
+	this->binnary = false;
 }
 
 RunEngine::~RunEngine() {
@@ -40,11 +40,12 @@ int RunEngine::Run(char* argv[]){
 	printf("# \t 1) AMBER MDCRD FILE\n");
 	printf("# \t 2) GZIPPED AMBER MDCRD FILE\n");
 	printf("# \t 3) NETCDF FORMAT FILE\n");
+	printf("# \t 4) CHARMM DCD FORMAT FILE\n");
 	printf("#\n");
 	printf("# Enter your choice number: ");
 	cin >> traj_ans;
 
-	if (traj_ans <1 or traj_ans > 3){
+	if (traj_ans <1 or traj_ans > 4){
 		printf ("Selection %d invalid. Please try again.\n", traj_ans);
 		exit(1);
 	}
@@ -52,7 +53,10 @@ int RunEngine::Run(char* argv[]){
 		gzipped=true;
 	}
 	else if (traj_ans == 3){
-		netcdf = true;
+		this->binnary = true;
+	}
+	else if (traj_ans == 4){
+		this->binnary = true;
 	}
 
 
@@ -103,8 +107,8 @@ int RunEngine::Run(char* argv[]){
 
 			printf("# You selected atom %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
 			printf("# And atom %d (%s) to %d (%s).\n", sel_start, Mol->atomnames[sel_start-1].c_str(), sel_end, Mol->atomnames[sel_end-1].c_str());
-			if (netcdf){
-				Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+			if (this->binnary){
+				Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 			}
 			else {
 				Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
@@ -122,8 +126,8 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = sel_end +1;
 		sel2_end = Mol->N;
 		printf("# And atom %d (%s) to %d (%s).\n", sel_start, Mol->atomnames[sel_start-1].c_str(), sel_end, Mol->atomnames[sel_end-1].c_str());
-		if (netcdf){
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		if (this->binnary){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 		}
 		else {
 			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
@@ -153,8 +157,8 @@ int RunEngine::Run(char* argv[]){
 		sel2_end = Mol->N;
 
 		printf("# You selected atoms %d (%s) to %d (%s).\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		if (netcdf){
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		if (this->binnary){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 		}
 		else {
 			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
@@ -173,8 +177,8 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = Mol->residue_pointer[sel2_res-1];
 		sel2_end = Mol->residue_pointer[sel2_res]-1;
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		if (netcdf){
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		if (this->binnary){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 		}
 		else {
 			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
@@ -193,8 +197,8 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = Mol->residue_pointer[0];			// first solvent atom
 		sel2_end = Mol->residue_pointer[protein_last_residue];
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		if (netcdf){
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		if (this->binnary){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 		}
 		else {
 			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
@@ -219,8 +223,8 @@ int RunEngine::Run(char* argv[]){
 		}
 
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
-		if (netcdf){
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2]);
+		if (this->binnary){
+			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 		}
 		else {
 			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
