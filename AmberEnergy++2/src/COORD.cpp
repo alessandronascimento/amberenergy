@@ -129,28 +129,13 @@ void COORD::read_netcdf(PRMTOP* Mol, char* filename){
 		nc_Coordinates->get(&coords[0][0], 1, Ndim, 3);
 		printf(" %12d ", frame);
 		Energy->compute_nb2(Mol, coords, this->astart, this->aend, this->bstart, this->bend);
+		nc_Coordinates->set_cur(frame);
 	}
 }
 
 void COORD::read_dcd(PRMTOP* Mol, char* filename){
-/*	ifstream dcdfile;
-	dcdfile.open(filename, ios::in | ios::binary);
-	char  readBuffer[2049] = {0};
-	string *buffer;
-
-	if (!dcdfile.is_open()){
-		printf("Could not open file %s. Please check.\n", filename);
-		exit(1);
-	}
-
-	for (int i=0; i<10; i++){
-		dcdfile.read(readBuffer, 2048);
-		printf("%s\n", readBuffer);
-	}
-*/
 	FILE *dcdfile;
 	dcdfile = fopen(filename, "rb");
-//	int N;
 	int hdr;
 	char magic[4];
 	int inctrl[20];
@@ -161,22 +146,22 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 	float *x, *y, *z;
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
-	printf("HDR: %d\n", hdr);
+//	printf("HDR: %d\n", hdr);
 
 	fread(magic, sizeof(char), 4, dcdfile);
-	printf("magic: %s\n", magic);
+	printf("# DCD HDR: %s\n", magic);
 
 	fread(&inctrl, sizeof(int), 20, dcdfile);
-	printf("inctrl: %d\n", inctrl[0]);
+//	printf("inctrl: %d\n", inctrl[0]);
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
-	printf("HDR: %d\n", hdr);
+//	printf("HDR: %d\n", hdr);
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
-	printf("HDR: %d\n", hdr);
+//	printf("HDR: %d\n", hdr);
 
 	fread(&NTITL, sizeof(int), 1, dcdfile);
-	printf("NTITL: %d\n", NTITL);
+	printf("# DCD NTITL: %d\n", NTITL);
 
 	for (int j=0; j < NTITL; j++) {
 		title = (char *) malloc(sizeof(char) * 82);
@@ -185,25 +170,25 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 		}
 		title[80] = '\n';
 		title[81] = (char) 0;
-		printf("TITLE: %s\n", title);
+		printf("# DCD TITLE: %s\n", title);
 	}
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
-	printf("HDR: %d\n", hdr);
+//	printf("HDR: %d\n", hdr);
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
-	printf("HDR: %d\n", hdr);
+//	printf("HDR: %d\n", hdr);
 
 	fread(&NATREC, sizeof(int), 1, dcdfile);
-	printf("NATREC: %d\n", NATREC);
+	printf("# DCD NATREC: %d\n", NATREC);
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
-	printf("HDR: %d\n", hdr);
+//	printf("HDR: %d\n", hdr);
 
 	NFREAT = NATREC-inctrl[8];
-	printf("NFREAT: %d\n", NFREAT);
+	printf("# DCD NFREAT: %d\n", NFREAT);
 
-	printf("What is in box: %d\n", inctrl[10]);
+	printf("# Box info: %d\n", inctrl[10]);
 
 
 
@@ -219,7 +204,7 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 //		printf("HDR: %d\n", hdr);
 
 		fread(x, sizeof(float), NATREC, dcdfile);
-		printf("x: %f\n", x[0]);
+//		printf("x: %f\n", x[0]);
 
 		fread(&hdr, sizeof(int), 1, dcdfile);
 //		printf("HDR: %d\n", hdr);
@@ -228,7 +213,7 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 //		printf("HDR: %d\n", hdr);
 
 		fread(y, sizeof(float), NATREC, dcdfile);
-		printf("y: %f\n", y[0]);
+//		printf("y: %f\n", y[0]);
 
 		fread(&hdr, sizeof(int), 1, dcdfile);
 //		printf("HDR: %d\n", hdr);
@@ -237,11 +222,27 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 //		printf("HDR: %d\n", hdr);
 
 		fread(z, sizeof(float), NATREC, dcdfile);
-		printf("z: %f\n", z[0]);
+//		printf("z: %f\n", z[0]);
 
-		printf("step: %d\n", step);
+//		printf("step: %d\n", step);
 
 		fread(&hdr, sizeof(int), 1, dcdfile);
 //		printf("HDR: %d\n", hdr);
+
+/*
+ * Read coordinates. Now, organizing in c++ vector or double array. vector is prefereed.
+ */
+		xyz.clear();
+		current_crd.clear();
+		for (int i=0; i< NATREC; i++){
+			xyz.clear();
+			xyz.push_back(x[i]);
+			xyz.push_back(y[i]);
+			xyz.push_back(z[i]);
+			current_crd.push_back(xyz);
+			xyz.clear();
+		}
+		printf(" %12d ", step);
+		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
 	}
 }
