@@ -136,7 +136,8 @@ void COORD::read_netcdf(PRMTOP* Mol, char* filename){
 void COORD::read_dcd(PRMTOP* Mol, char* filename){
 	FILE *dcdfile;
 	dcdfile = fopen(filename, "rb");
-	int hdr;
+	int* hdr;
+	hdr = new int[1];
 	char magic[4];
 	int inctrl[20];
 	int NTITL;
@@ -146,20 +147,18 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 	float *x, *y, *z;
 	double *box = new double[6];
 
-	fread(&hdr, sizeof(int), 1, dcdfile);
-//	printf("HDR: %d\n", hdr);
+
+
+	this->parse_binary_int(hdr, dcdfile);
 
 	fread(magic, sizeof(char), 4, dcdfile);
 	printf("# DCD HDR: %s\n", magic);
 
 	fread(&inctrl, sizeof(int), 20, dcdfile);
-//	printf("inctrl: %d\n", inctrl[0]);
 
-	fread(&hdr, sizeof(int), 1, dcdfile);
-//	printf("HDR: %d\n", hdr);
+	this->parse_binary_int(hdr, dcdfile);
 
-	fread(&hdr, sizeof(int), 1, dcdfile);
-//	printf("HDR: %d\n", hdr);
+	this->parse_binary_int(hdr, dcdfile);
 
 	fread(&NTITL, sizeof(int), 1, dcdfile);
 	printf("# DCD NTITL: %d\n", NTITL);
@@ -174,26 +173,21 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 		printf("# DCD TITLE: %s\n", title);
 	}
 
-	fread(&hdr, sizeof(int), 1, dcdfile);
-//	printf("HDR: %d\n", hdr);
+	this->parse_binary_int(hdr, dcdfile);
 
-	fread(&hdr, sizeof(int), 1, dcdfile);
-//	printf("HDR: %d\n", hdr);
+	this->parse_binary_int(hdr, dcdfile);
 
 	fread(&NATREC, sizeof(int), 1, dcdfile);
 	printf("# DCD NATREC: %d\n", NATREC);
 
-	fread(&hdr, sizeof(int), 1, dcdfile);
-//	printf("HDR: %d\n", hdr);
+	this->parse_binary_int(hdr, dcdfile);
 
 	NFREAT = NATREC-inctrl[8];
 	printf("# DCD NFREAT: %d\n", NFREAT);
 
-//	printf("# Box info: %d\n", inctrl[10]);
-
-	x = new float[NATREC]; //(float *) malloc(sizeof(float) * NATREC);
-	y = new float[NATREC]; //(float *) malloc(sizeof(float) * NATREC);
-	z = new float[NATREC]; //(float *) malloc(sizeof(float) * NATREC);
+	x = new float[NATREC];
+	y = new float[NATREC];
+	z = new float[NATREC];
 
 	step = 0;
 
@@ -201,44 +195,29 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 		step++;
 
 		if (inctrl[10] == 1){
-			fread(&hdr, sizeof(int), 1, dcdfile);
-//			printf("HDR: %d\n", hdr);
-			if (hdr != -1){
+			this->parse_binary_int(hdr, dcdfile);
+			if (hdr[0] != -1){
 				fread(box, sizeof(double), 6, dcdfile);
 //				printf("# DCD Box info: %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f\n", box[0], box[1], box[2], box[3], box[4], box[5]);
-				fread(&hdr, sizeof(int), 1, dcdfile);
-//				printf("HDR: %d\n", hdr);
+				this->parse_binary_int(hdr, dcdfile);
 			}
 		}
 
-		fread(&hdr, sizeof(int), 1, dcdfile);
-//		printf("HDR: %d\n", hdr);
+		this->parse_binary_int(hdr, dcdfile);
 
 		fread(x, sizeof(float), NATREC, dcdfile);
-//		printf("x: %f\n", x[0]);
 
-		fread(&hdr, sizeof(int), 1, dcdfile);
-//		printf("HDR: %d\n", hdr);
-
-		fread(&hdr, sizeof(int), 1, dcdfile);
-//		printf("HDR: %d\n", hdr);
+		this->parse_binary_int(hdr, dcdfile);
+		this->parse_binary_int(hdr, dcdfile);
 
 		fread(y, sizeof(float), NATREC, dcdfile);
-//		printf("y: %f\n", y[0]);
 
-		fread(&hdr, sizeof(int), 1, dcdfile);
-//		printf("HDR: %d\n", hdr);
-
-		fread(&hdr, sizeof(int), 1, dcdfile);
-//		printf("HDR: %d\n", hdr);
+		this->parse_binary_int(hdr, dcdfile);
+		this->parse_binary_int(hdr, dcdfile);
 
 		fread(z, sizeof(float), NATREC, dcdfile);
-//		printf("z: %f\n", z[0]);
 
-//		printf("step: %d\n", step);
-
-		fread(&hdr, sizeof(int), 1, dcdfile);
-//		printf("HDR: %d\n", hdr);
+		this->parse_binary_int(hdr, dcdfile);
 
 /*
  * Read coordinates. Now, organizing in c++ vector or double array. vector is prefereed.
@@ -260,4 +239,14 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 	delete y;
 	delete z;
 	delete box;
+}
+
+void COORD::parse_binary_int(int* i, FILE* file){
+
+	fread(i, sizeof(int), 1, file);
+
+#ifdef DEBUG
+	printf("HDR: %d\n", i);
+#endif
+
 }
