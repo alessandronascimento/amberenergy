@@ -144,6 +144,7 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 	int NFREAT;
 	char* title;
 	float *x, *y, *z;
+	double *box = new double[6];
 
 	fread(&hdr, sizeof(int), 1, dcdfile);
 //	printf("HDR: %d\n", hdr);
@@ -188,18 +189,28 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 	NFREAT = NATREC-inctrl[8];
 	printf("# DCD NFREAT: %d\n", NFREAT);
 
-	printf("# Box info: %d\n", inctrl[10]);
+//	printf("# Box info: %d\n", inctrl[10]);
 
-
-
-	x = (float *) malloc(sizeof(float) * NATREC);
-	y = (float *) malloc(sizeof(float) * NATREC);
-	z = (float *) malloc(sizeof(float) * NATREC);
+	x = new float[NATREC]; //(float *) malloc(sizeof(float) * NATREC);
+	y = new float[NATREC]; //(float *) malloc(sizeof(float) * NATREC);
+	z = new float[NATREC]; //(float *) malloc(sizeof(float) * NATREC);
 
 	step = 0;
 
 	while(!feof(dcdfile)){
 		step++;
+
+		if (inctrl[10] == 1){
+			fread(&hdr, sizeof(int), 1, dcdfile);
+//			printf("HDR: %d\n", hdr);
+			if (hdr != -1){
+				fread(box, sizeof(double), 6, dcdfile);
+//				printf("# DCD Box info: %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f\n", box[0], box[1], box[2], box[3], box[4], box[5]);
+				fread(&hdr, sizeof(int), 1, dcdfile);
+//				printf("HDR: %d\n", hdr);
+			}
+		}
+
 		fread(&hdr, sizeof(int), 1, dcdfile);
 //		printf("HDR: %d\n", hdr);
 
@@ -245,4 +256,8 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 		printf(" %12d ", step);
 		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
 	}
+	delete x;
+	delete y;
+	delete z;
+	delete box;
 }
