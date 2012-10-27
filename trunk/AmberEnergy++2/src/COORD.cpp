@@ -170,7 +170,7 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 		}
 		title[80] = '\n';
 		title[81] = (char) 0;
-		printf("# DCD TITLE: %s\n", title);
+		printf("# DCD TITLE: %s", title);
 	}
 
 	this->parse_binary_int(hdr, dcdfile);
