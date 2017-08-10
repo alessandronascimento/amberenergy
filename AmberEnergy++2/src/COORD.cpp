@@ -13,12 +13,7 @@ COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, bool g
 	this->bstart = bs;
 	this->bend = be;
 	Energy = new ENERGY;
-	if (gzipped){
-		this->read_gzcrd(Mol, filename);
-	}
-	else {
-		this->read_crd(Mol, filename);
-	}
+        this->read_crd(Mol, filename);
 }
 
 COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, int mode) {
@@ -66,6 +61,7 @@ void COORD::read_crd(PRMTOP* Mol, char* filename) {
 	}
 }
 
+/*
 void COORD::read_gzcrd(PRMTOP* Mol, char* filename) {
 	step = 0;
 	igzstream mdcrd(filename);
@@ -93,7 +89,7 @@ void COORD::read_gzcrd(PRMTOP* Mol, char* filename) {
 		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
 	}
 }
-
+*/
 COORD::~COORD() {
 	current_crd.clear();
 	xyz.clear();

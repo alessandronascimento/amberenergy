@@ -10,7 +10,7 @@
 
 #include "PRMTOP.h"
 #include "ENERGY.h"
-#include <gzstream.h>
+//#include <gzstream.h>
 #include <fstream>
 #include <stdio.h>
 #include <string>
@@ -29,7 +29,7 @@ public:
 	ENERGY* Energy;
 	virtual ~COORD();
 	void read_crd(PRMTOP* Mol, char* filename);
-	void read_gzcrd(PRMTOP* Mol, char* filename);
+//	void read_gzcrd(PRMTOP* Mol, char* filename);
 	void read_netcdf(PRMTOP* Mol, char* filename);
 	void read_dcd(PRMTOP* Mol, char* filename);
 	void parse_binary_int(int* i, FILE* file);

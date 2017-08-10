@@ -38,7 +38,7 @@ int RunEngine::Run(char* argv[]){
 	printf("# Define the format of the trajectory file: \n");
 	printf("#\n");
 	printf("# \t 1) AMBER MDCRD FILE\n");
-	printf("# \t 2) GZIPPED AMBER MDCRD FILE\n");
+//	printf("# \t 2) GZIPPED AMBER MDCRD FILE\n");
 	printf("# \t 3) NETCDF FORMAT FILE\n");
 	printf("# \t 4) CHARMM DCD FORMAT FILE\n");
 	printf("#\n");
@@ -50,7 +50,9 @@ int RunEngine::Run(char* argv[]){
 		exit(1);
 	}
 	if (traj_ans == 2){
-		gzipped=true;
+//		gzipped=true;
+            printf ("Selection %d is currently invalid. Please try again.\n", traj_ans);
+            exit(1);
 	}
 	else if (traj_ans == 3){
 		this->binnary = true;
@@ -224,10 +226,10 @@ int RunEngine::Run(char* argv[]){
 
 		printf("# You selected atoms %d (%s) to %d (%s)\n", sel2_start, Mol->atomnames[sel2_start-1].c_str(), sel2_end, Mol->atomnames[sel2_end-1].c_str());
 		if (this->binnary){
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
+                        Coord = new COORD(Mol, sel_start-1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], traj_ans);
 		}
 		else {
-			Coord = new COORD(Mol, sel_start -1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
+                        Coord = new COORD(Mol, sel_start-1, sel_end-1, sel2_start-1, sel2_end-1, argv[2], gzipped);
 		}
 
 		break;
