@@ -187,6 +187,8 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 
 	step = 0;
 
+	double sum_x=0.0, sum_xsquared=0.0, energy=0.0;
+
 	while(!feof(dcdfile)){
 		step++;
 
@@ -229,12 +231,21 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 			xyz.clear();
 		}
 		printf(" %12d ", step);
-		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
+		energy = Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
+		sum_x += energy;
+		sum_xsquared += (energy*energy);
 	}
 	delete x;
 	delete y;
 	delete z;
 	delete box;
+	
+	double average = sum_x / step;
+	double stdev = (sum_xsquared/step) - ((sum_x/step)*(sum_x/step));
+	stdev = sqrt(stdev);
+	
+	printf("#Average Energy, Standard Deviation and Standard Error of the Mean\n");
+	printf("# %12.4f +- %12.4f (%12.4f)\n", average, stdev, (stdev/sqrt(step)));
 }
 
 void COORD::parse_binary_int(int* i, FILE* file){
