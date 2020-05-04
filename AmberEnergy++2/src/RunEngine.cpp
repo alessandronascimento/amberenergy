@@ -220,7 +220,7 @@ int RunEngine::Run(char* argv[]){
 		sel2_start = Mol->residue_pointer[sel_res-1];
 		sel2_end = Mol->residue_pointer[sel2_res]-1;
 
-		if (sel2_end < 0){
+        if ((sel2_end < 0) or (sel2_end < sel2_start)){
 			sel2_end = Mol->N;
 		}
 
