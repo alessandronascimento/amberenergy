@@ -13,7 +13,12 @@ COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, bool g
 	this->bstart = bs;
 	this->bend = be;
 	Energy = new ENERGY;
-        this->read_crd(Mol, filename);
+	if (gzipped){
+		this->read_gzcrd(Mol, filename);
+	}
+	else {
+		this->read_crd(Mol, filename);
+	}
 }
 
 COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, int mode) {
@@ -30,6 +35,20 @@ COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, int mo
 		this->read_dcd(Mol, filename);
 		break;
 	}
+}
+
+COORD::COORD(PRMTOP* Mol, vector<vector<int> > receptor_atoms, vector<vector<int> > ligand_atoms, char* filename, int mode) {
+    this->receptor_atom_chuncks = receptor_atoms;
+    this->ligand_atom_chuncks = ligand_atoms;
+    Energy = new ENERGY;
+    switch (mode){
+    case 3:
+        this->read_netcdf(Mol, filename, receptor_atoms, ligand_atoms);
+        break;
+    case 4:
+        this->read_dcd(Mol, filename);
+        break;
+    }
 }
 
 
@@ -61,7 +80,6 @@ void COORD::read_crd(PRMTOP* Mol, char* filename) {
 	}
 }
 
-/*
 void COORD::read_gzcrd(PRMTOP* Mol, char* filename) {
 	step = 0;
 	igzstream mdcrd(filename);
@@ -89,7 +107,7 @@ void COORD::read_gzcrd(PRMTOP* Mol, char* filename) {
 		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
 	}
 }
-*/
+
 COORD::~COORD() {
 	current_crd.clear();
 	xyz.clear();
@@ -127,6 +145,40 @@ void COORD::read_netcdf(PRMTOP* Mol, char* filename){
 		Energy->compute_nb2(Mol, coords, this->astart, this->aend, this->bstart, this->bend);
 		nc_Coordinates->set_cur(frame);
 	}
+}
+
+void COORD::read_netcdf(PRMTOP* Mol, char* filename, vector<vector<int> > rec, vector<vector<int> > lig){
+    NcFile nc_mdcrd(filename, NcFile::ReadOnly);
+
+    if (!nc_mdcrd.is_valid()){
+        printf("# Could not open trajectory file %s. Please check.\n", filename);
+    }
+
+    NcDim* FrameDim = nc_mdcrd.get_dim("frame");
+    int size = FrameDim->size();
+    printf("# NetCDF Frame dimension: %d\n", size);
+
+    NcDim* NDim = nc_mdcrd.get_dim("atom");
+    const int Ndim = NDim->size();
+    if (Ndim != Mol->N){
+        printf("# Mismatch among number of atoms in PRMTOP (%d) and NETCDF (%d) files. Please check.\n", Mol->N, Ndim);
+        exit(1);
+    }
+    else {
+        printf("# NetCDF number of atoms: %d\n", Ndim);
+    }
+
+    NcVar* nc_Coordinates = nc_mdcrd.get_var("coordinates");
+    double coords[Ndim][3];
+
+    printf("#%12s %12s %12s %12s\n", "Step", "Elec", "VDW", "Total");
+
+    for (int frame=1; frame <= size; frame++){
+        nc_Coordinates->get(&coords[0][0], 1, Ndim, 3);
+        printf(" %12d ", frame);
+        Energy->compute_nb2(Mol, coords, rec, lig);
+        nc_Coordinates->set_cur(frame);
+    }
 }
 
 void COORD::read_dcd(PRMTOP* Mol, char* filename){
@@ -187,8 +239,6 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 
 	step = 0;
 
-	double sum_x=0.0, sum_xsquared=0.0, energy=0.0;
-
 	while(!feof(dcdfile)){
 		step++;
 
@@ -231,21 +281,12 @@ void COORD::read_dcd(PRMTOP* Mol, char* filename){
 			xyz.clear();
 		}
 		printf(" %12d ", step);
-		energy = Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
-		sum_x += energy;
-		sum_xsquared += (energy*energy);
+		Energy->compute_nb2(Mol, current_crd, this->astart, this->aend, this->bstart, this->bend);
 	}
 	delete x;
 	delete y;
 	delete z;
 	delete box;
-	
-	double average = sum_x / step;
-	double stdev = (sum_xsquared/step) - ((sum_x/step)*(sum_x/step));
-	stdev = sqrt(stdev);
-	
-	printf("#Average Energy, Standard Deviation and Standard Error of the Mean\n");
-	printf("# %12.4f +- %12.4f (%12.4f)\n", average, stdev, (stdev/sqrt(step)));
 }
 
 void COORD::parse_binary_int(int* i, FILE* file){

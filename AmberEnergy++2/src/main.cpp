@@ -26,7 +26,7 @@ using namespace std;
 int main (int argc, char* argv[]) {
 
 	if (argc < 2) {
-                printf("USAGE: %s prmtop mdcrd\n", argv[0]);
+		cout << "USAGE: amberenergy++.x prmtop mdcrd" << endl;
 		exit(1);
 	}
 
