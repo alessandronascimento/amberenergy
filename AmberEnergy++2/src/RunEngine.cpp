@@ -72,7 +72,7 @@ int RunEngine::Run(char* argv[]){
     printf("# \t 4) Selection - Selection interaction calculations\n");
     printf("# \t 5) Protein Internal Energy Calculations\n");
     printf("# \t 6) Multiple Selection - Multiple Selection Calculations\n");
-    printf("# \t 7) Multiple Selection - Multiple Selection w/ Chuncks of Residues for Calculations\n");
+    printf("# \t 7) Multiple Selection - Multiple Selection w/ Chuncks Calculations\n");
     printf("#\n");
     printf("# Enter your choice number: ");
     cin >> calc_ans;
@@ -80,12 +80,11 @@ int RunEngine::Run(char* argv[]){
     protein_last_residue = 0;
 
     COORD* Coord;
-    vector<int> vitmp;
 
 
     switch(calc_ans) {
 
-    case 1:
+    case 1: {
         cout << "# Define your ligand residue number: " ;
         cin >> sel_res;
 
@@ -117,9 +116,10 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
 
-    case 2:
+    case 2: {
         printf("# Define your ligand residue number: ");
         cin >> sel_res;
         sel_start = Mol->residue_pointer[sel_res-1];
@@ -136,10 +136,11 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
 
 
-    case 3:
+    case 3: {
         printf("# Define your ligand residue number: ");
         cin >> sel_res;
         sel_start = Mol->residue_pointer[sel_res-1];
@@ -167,8 +168,9 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
-    case 4:
+    case 4: {
         printf("# Define your ligand residue number: ");
         cin >> sel_res;
         sel_start = Mol->residue_pointer[sel_res-1];
@@ -187,8 +189,9 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
-    case 5:
+    case 5: {
         for(unsigned i=0; i<Mol->resnames.size(); i++) {
             if (Mol->resnames[i] != "WAT" and Mol->resnames[i] != "Na+" and Mol->resnames[i] !="Cl-" and Mol->resnames[i] != "Mn2" and Mol->resnames[i] != "Ca2") {
                 protein_last_residue++;
@@ -207,8 +210,9 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
-    case 6:
+    case 6: {
         printf("# Define your first residue range (e.g: 1 100): ");
         cin >> sel_res >> sel2_res ;
         sel_start = Mol->residue_pointer[sel_res-1];
@@ -241,48 +245,39 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
-    case 7:
-        printf("# Define the number of chuncks in the receptor (e.g. 2): ");
+    case 7: {
+        vector<int> vitmp;
+        printf("Define the number of chuncks in the receptor (e.g. 2): ");
         cin >> receptor_chuncks;
         for (int i=0; i< receptor_chuncks; i++){
             printf("# Define the residue range for chunck %2d (e.g: 1 100): ", i);
             cin >> sel_res >> sel2_res ;
-            vitmp.push_back(sel_res);
-            vitmp.push_back(sel2_res);
-            receptor_residues_chuncks.push_back(vitmp);
-            vitmp.clear();
-
             sel_start = Mol->residue_pointer[sel_res-1];
             sel_end = Mol->residue_pointer[sel2_res]-1;
             printf("# You selected atoms %d (%s) to %d (%s)\n", sel_start, Mol->atomnames[sel_start-1].c_str(), sel_end, Mol->atomnames[sel_end-1].c_str());
-            vitmp.push_back(sel_start-1);
-            vitmp.push_back(sel_end-1);
-            receptor_atom_chuncks.push_back(vitmp);
-            vitmp.clear();
+            for (int ri=sel_start-1; ri<sel_end; ri++){
+                this->receptor_atoms.push_back(ri);
+            }
         }
 
-        printf("# Define the number of chuncks in the ligand (e.g. 2): ");
+        printf("Define the number of chuncks in the ligand (e.g. 2): ");
         cin >> ligand_chuncks;
         for (int i=0; i< ligand_chuncks; i++){
             printf("# Define the residue range for chunck %2d (e.g: 101 200): ", i);
             cin >> sel_res >> sel2_res ;
-            vitmp.push_back(sel_res);
-            vitmp.push_back(sel2_res);
-            ligand_residues_chuncks.push_back(vitmp);
-            vitmp.clear();
 
             sel_start = Mol->residue_pointer[sel_res-1];
             sel_end = Mol->residue_pointer[sel2_res]-1;
             printf("# You selected atoms %d (%s) to %d (%s)\n", sel_start, Mol->atomnames[sel_start-1].c_str(), sel_end, Mol->atomnames[sel_end-1].c_str());
-            vitmp.push_back(sel_start-1);
-            vitmp.push_back(sel_end-1);
-            ligand_atom_chuncks.push_back(vitmp);
-            vitmp.clear();
+            for (int ri=sel_start-1; ri<sel_end; ri++){
+                this->ligand_atoms.push_back(ri);
+            }
         }
 
         if (this->binnary){
-            Coord = new COORD(Mol, receptor_atom_chuncks, ligand_atom_chuncks, argv[2], traj_ans);
+            Coord = new COORD(Mol, receptor_atoms, ligand_atoms, argv[2], traj_ans);
         }
         else {
             printf("Sorry! This option is not available for non binnary trajectories!");
@@ -290,10 +285,12 @@ int RunEngine::Run(char* argv[]){
         }
 
         break;
+    }
 
-    default:
+    default: {
         printf("Selection %d invalid. Please try again.\n", calc_ans);
         break;
+    }
     }
 
     return 0;

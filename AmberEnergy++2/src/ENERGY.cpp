@@ -123,42 +123,48 @@ double ENERGY::compute_nb2 (PRMTOP* Mol, double coords[][3], int astart, int aen
     return (elec+vdw);
 }
 
-double ENERGY::compute_nb2 (PRMTOP* Mol, double coords[][3], vector<vector<int> > receptor_atom_chuncks, vector<vector<int> > ligand_atom_chuncks) {
-
+double ENERGY::compute_nb2 (PRMTOP* Mol, double coords[][3], vector<int> receptor_atom_chuncks, vector<int> ligand_atom_chuncks) {
     elec=0.00;
     vdw=0.00;
+    int i,j;
+    for (int ri=0; ri<receptor_atom_chuncks.size(); ri++){
+        i=receptor_atom_chuncks[ri];
+        this->get_excluded_atoms(Mol, i);
 
-    for (unsigned rchuncks=0; rchuncks<receptor_atom_chuncks.size(); rchuncks++){
-        for (int i=receptor_atom_chuncks[rchuncks][0]; i<=receptor_atom_chuncks[rchuncks][1]; i++) {
-            this->get_excluded_atoms(Mol, i);
+        for (int lj=0; lj<ligand_atom_chuncks.size(); lj++) {
+            j=ligand_atom_chuncks[lj];
 
-            for (unsigned lchunck=0; lchunck < ligand_atom_chuncks.size(); lchunck++){
-                for (int j=ligand_atom_chuncks[lchunck][0]; j<=ligand_atom_chuncks[lchunck][1]; j++) {
+            this->excluded=false;
+            for(unsigned a=0; a< this->excluded_atoms.size(); a++){
+                if (excluded_atoms[a]-1 == j){
+                    excluded=true;
+                }
+            }
 
-                    this->excluded=false;
-                    for(unsigned a=0; a< this->excluded_atoms.size(); a++){
-                        if (excluded_atoms[a]-1 == j){
-                            excluded=true;
-                        }
-                    }
+            if (not this->excluded){
 
-                    if (not this->excluded){
+                r = this->compute_r(coords[i], coords[j]);
+                r2 = r*r;
+                elec += ((Mol->charges[i]*Mol->charges[j])/(r));
+                iaci = Mol->Natomtypes*(Mol->atom_types_index[i]-1);
+                ic = Mol->ico[(iaci + Mol->atom_types_index[j])-1];
 
-                        r = this->compute_r(coords[i], coords[j]);
-                        r2 = r*r;
-                        elec += ((Mol->charges[i]*Mol->charges[j])/(r));
-                        iaci = Mol->Natomtypes*(Mol->atom_types_index[i]-1);
-                        ic = Mol->ico[(iaci + Mol->atom_types_index[j])-1];
+#ifdef DEBUG
+                printf("ico for atoms %s and %s: %d\n", Mol->atomnames[i].c_str(), Mol->atomnames[j].c_str(), ic);
+#endif
 
-                        if (ic > 0) { 		// Use 12 - 6 LJ Potencial
-                            vdw += (((Mol->CN1[ic-1])/(r2*r2*r2*r2*r2*r2))-((Mol->CN2[ic-1])/(r2*r2*r2)));
-                        }
+                if (ic > 0) { 		// Use 12 - 6 LJ Potencial
+                    vdw += (((Mol->CN1[ic-1])/(r2*r2*r2*r2*r2*r2))-((Mol->CN2[ic-1])/(r2*r2*r2)));
+#ifdef DEBUG
+                    printf("CN1: %10.4f    CN2: %10.4f\n", Mol->CN1[ic-1], Mol->CN2[ic-1]);
+#endif
+                }
 
-                        else {			// Use 10 - 12 LJ Potencial
-                            vdw += (((Mol->ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((Mol->BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));
-
-                        }
-                    }
+                else {			// Use 10 - 12 LJ Potencial
+                    vdw += (((Mol->ASOL[-(ic-1)])/(r2*r2*r2*r2*r2*r2)) - ((Mol->BSOL[-(ic-1)])/(r2*r2*r2*r2*r2)));
+#ifdef DEBUG
+                    printf("ASOL: %10.4f    BSOL: %10.4f\n", Mol->ASOL[-(ic-1)], Mol->CN2[-(ic-1)]);
+#endif
                 }
             }
         }

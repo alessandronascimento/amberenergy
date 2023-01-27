@@ -32,7 +32,7 @@ public:
 	double compute_r(double i[], double j[]);
 	double compute_nb2 (PRMTOP* Mol, vector<vector<double> > coords, int astart, int aend, int bstart, int bend);
 	double compute_nb2 (PRMTOP* Mol, double coords[][3], int astart, int aend, int bstart, int bend);
-    double compute_nb2 (PRMTOP* Mol, double coords[][3], vector<vector<int> > receptor_atom_chuncks, vector<vector<int> > ligand_atom_chuncks);
+    double compute_nb2 (PRMTOP* Mol, double coords[][3], vector<int> receptor_atom_chuncks, vector<int> ligand_atom_chuncks);
 	void get_excluded_atoms(PRMTOP* Mol, int atom);
 };
 

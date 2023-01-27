@@ -37,7 +37,7 @@ COORD::COORD(PRMTOP* Mol, int as, int ae, int bs, int be, char* filename, int mo
 	}
 }
 
-COORD::COORD(PRMTOP* Mol, vector<vector<int> > receptor_atoms, vector<vector<int> > ligand_atoms, char* filename, int mode) {
+COORD::COORD(PRMTOP* Mol, vector<int> receptor_atoms, vector<int> ligand_atoms, char* filename, int mode) {
     this->receptor_atom_chuncks = receptor_atoms;
     this->ligand_atom_chuncks = ligand_atoms;
     Energy = new ENERGY;
@@ -46,7 +46,7 @@ COORD::COORD(PRMTOP* Mol, vector<vector<int> > receptor_atoms, vector<vector<int
         this->read_netcdf(Mol, filename, receptor_atoms, ligand_atoms);
         break;
     case 4:
-        this->read_dcd(Mol, filename);
+//        this->read_dcd(Mol, filename);
         break;
     }
 }
@@ -147,11 +147,11 @@ void COORD::read_netcdf(PRMTOP* Mol, char* filename){
 	}
 }
 
-void COORD::read_netcdf(PRMTOP* Mol, char* filename, vector<vector<int> > rec, vector<vector<int> > lig){
+void COORD::read_netcdf(PRMTOP* Mol, char* filename, vector<int> rec, vector<int> lig){
     NcFile nc_mdcrd(filename, NcFile::ReadOnly);
 
     if (!nc_mdcrd.is_valid()){
-        printf("# Could not open trajectory file %s. Please check.\n", filename);
+        printf("$ Could not open trajectory file %s. Please check.\n", filename);
     }
 
     NcDim* FrameDim = nc_mdcrd.get_dim("frame");

@@ -30,10 +30,12 @@ public:
 	int sel2_res;
     int receptor_chuncks;
     int ligand_chuncks;
-    vector<vector<int> > receptor_residues_chuncks;
-    vector<vector<int> > receptor_atom_chuncks;
-    vector<vector<int> > ligand_residues_chuncks;
-    vector<vector<int> > ligand_atom_chuncks;
+//    vector<vector<int> > receptor_residues_chuncks;
+//    vector<vector<int> > receptor_atom_chuncks;
+//    vector<vector<int> > ligand_residues_chuncks;
+//    vector<vector<int> > ligand_atom_chuncks;
+    vector<int> receptor_atoms;
+    vector<int> ligand_atoms;
 	RunEngine();
 	virtual ~RunEngine();
 	int Run(char* argv[]);
