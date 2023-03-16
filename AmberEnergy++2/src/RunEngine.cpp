@@ -249,7 +249,7 @@ int RunEngine::Run(char* argv[]){
 
     case 7: {
         vector<int> vitmp;
-        printf("Define the number of chuncks in the receptor (e.g. 2): ");
+        printf("# Define the number of chuncks in the receptor (e.g. 2): ");
         cin >> receptor_chuncks;
         for (int i=0; i< receptor_chuncks; i++){
             printf("# Define the residue range for chunck %2d (e.g: 1 100): ", i);
@@ -262,7 +262,7 @@ int RunEngine::Run(char* argv[]){
             }
         }
 
-        printf("Define the number of chuncks in the ligand (e.g. 2): ");
+        printf("# Define the number of chuncks in the ligand (e.g. 2): ");
         cin >> ligand_chuncks;
         for (int i=0; i< ligand_chuncks; i++){
             printf("# Define the residue range for chunck %2d (e.g: 101 200): ", i);
